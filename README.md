@@ -1,4 +1,4 @@
-# Image-Captioning --Utsav Jain
+# Image-Captioning 
 - Articles
 - Dataset
 
