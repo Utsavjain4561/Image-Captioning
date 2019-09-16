@@ -1,4 +1,4 @@
-# Image-Captioning - archit
+# Image-Captioning 
 - Articles
 - Dataset
 
@@ -10,6 +10,10 @@
 
 ### Dataset
 - [Flickr dataset](http://academictorrents.com/details/9dea07ba660a722ae1008c4c8afdd303b6f6e53b)
+- [MS COCO datset](https://drive.google.com/open?id=1_vxDe9aERI9jQ1aS-sTo_RJLyv9rviuE)
 
-### Python File
-- [Test file for python](test.py)
+### Research Papers
+- [Image Captioning using Deep Neural Architectures](https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8276124)
+- [Image Caption Generation Using Deep Learning Technique](https://ieeexplore.ieee.org/document/8697360)
+- [A Comprehensive Survey of Deep Learning for ImageCaptioning](https://arxiv.org/pdf/1810.04020.pdf)
+
