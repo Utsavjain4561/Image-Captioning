@@ -1,5 +1,9 @@
 from pickle import load
+from numpy import array
+from tqdm import tqdm
 from keras.preprocessing.text import Tokenizer
+from keras.preprocessing.sequence import pad_sequences
+from keras.utils import to_categorical
 def load_doc(filename):
 	file = open(filename,'r')
 	text = file.read()
@@ -45,6 +49,39 @@ def create_tokenizer(descriptions):
 	tokenizer = Tokenizer()
 	tokenizer.fit_on_texts(lines)
 	return tokenizer
+	lines = to_lines(descriptions)
+	return max(len(d.split()) for d in lines)
+ 
+def max_length(descriptions):
+	lines = to_lines(descriptions)
+	return max(len(d.split()) for d in lines)
+def create_sequences(tokenizer, max_length, desc_list, photo, vocab_size):
+	X1, X2, y = list(), list(), list()
+	# walk through each description for the image
+	for desc in desc_list:
+		# encode the sequence
+		seq = tokenizer.texts_to_sequences([desc])[0]
+		# split one sequence into multiple X,y pairs
+		for i in range(1, len(seq)):
+			# split into input and output pair
+			in_seq, out_seq = seq[:i], seq[i]
+			# pad input sequence
+			in_seq = pad_sequences([in_seq], maxlen=max_length)[0]
+			# encode output sequence
+			out_seq = to_categorical([out_seq], num_classes=vocab_size)[0]
+			# store
+			X1.append(photo)
+			X2.append(in_seq)
+			y.append(out_seq)
+	return array(X1), array(X2), array(y)
+def data_generator(descriptions, photos, tokenizer, max_length, vocab_size):
+	# loop for ever over images
+	while 1:
+		for key, desc_list in descriptions.items():
+			# retrieve the photo feature
+			photo = photos[key][0]
+			in_img, in_seq, out_word = create_sequences(tokenizer, max_length, desc_list, photo, vocab_size)
+			yield [[in_img, in_seq], out_word]
 
 filename = '/home/uj/Desktop/Resources/Flickr8k/Flickr8k_text/Flickr_8k.trainImages.txt'
 train_data = load_training_data(filename)
@@ -60,3 +97,12 @@ print('Photos: %d'%len(train_features))
 tokenizer = create_tokenizer(train_descriptions)
 vocab_length = len(tokenizer.word_index)+1
 print('Vocabulary Size: %d'%vocab_length)
+
+max_length = max_length(train_descriptions)
+print('Max Description length %d'%max_length)
+generator = data_generator(train_descriptions, train_features, tokenizer, 
+	max_length, vocab_length)
+inputs, outputs = next(generator)
+print(inputs[0].shape)
+print(inputs[1].shape)
+print(outputs.shape)
