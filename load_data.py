@@ -1,4 +1,5 @@
 from pickle import load
+from pickle import dump
 from numpy import array
 from tqdm import tqdm
 from keras.preprocessing.text import Tokenizer
@@ -99,30 +100,31 @@ train_features = load_photo_features('/home/uj/Desktop/Resources/features.pkl',t
 print('Photos: %d'%len(train_features))
 
 tokenizer = create_tokenizer(train_descriptions)
+dump(tokenizer,open('tokenizer.pkl','wb'))
 vocab_length = len(tokenizer.word_index)+1
-print('Vocabulary Size: %d'%vocab_length)
+# print('Vocabulary Size: %d'%vocab_length)
 
-max_length = max_length(train_descriptions)
-
-
-
-print('Max Description length %d'%max_length)
-generator = data_generator(train_descriptions, train_features, tokenizer, 
-	max_length, vocab_length)
-inputs, outputs = next(generator)
-print(inputs[0].shape)
-print(inputs[1].shape)
-print(outputs.shape)
-
-model = caption_model(vocab_length,max_length)
+# max_length = max_length(train_descriptions)
 
 
-epochs = 20
-steps = len(train_descriptions)
-for i in range(epochs):
-	generator = data_generator(train_descriptions,train_features,
-		tokenizer,max_length,vocab_length)
-	model.fit_generator(generator,epochs=1,steps_per_epoch=steps,
-		verbose=1)
-	model.save('model_'+str(i)+'.h5')
+
+# print('Max Description length %d'%max_length)
+# generator = data_generator(train_descriptions, train_features, tokenizer, 
+# 	max_length, vocab_length)
+# inputs, outputs = next(generator)
+# print(inputs[0].shape)
+# print(inputs[1].shape)
+# print(outputs.shape)
+
+# model = caption_model(vocab_length,max_length)
+
+
+# epochs = 20
+# steps = len(train_descriptions)
+# for i in range(epochs):
+# 	generator = data_generator(train_descriptions,train_features,
+# 		tokenizer,max_length,vocab_length)
+# 	model.fit_generator(generator,epochs=1,steps_per_epoch=steps,
+# 		verbose=1)
+# 	model.save('model_'+str(i)+'.h5')
 
