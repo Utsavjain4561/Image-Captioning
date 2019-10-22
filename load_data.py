@@ -4,6 +4,8 @@ from tqdm import tqdm
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
+from model import caption_model
+
 def load_doc(filename):
 	file = open(filename,'r')
 	text = file.read()
@@ -74,6 +76,7 @@ def create_sequences(tokenizer, max_length, desc_list, photo, vocab_size):
 			X2.append(in_seq)
 			y.append(out_seq)
 	return array(X1), array(X2), array(y)
+# For Progressive Loading
 def data_generator(descriptions, photos, tokenizer, max_length, vocab_size):
 	# loop for ever over images
 	while 1:
@@ -82,6 +85,7 @@ def data_generator(descriptions, photos, tokenizer, max_length, vocab_size):
 			photo = photos[key][0]
 			in_img, in_seq, out_word = create_sequences(tokenizer, max_length, desc_list, photo, vocab_size)
 			yield [[in_img, in_seq], out_word]
+
 
 filename = '/home/uj/Desktop/Resources/Flickr8k/Flickr8k_text/Flickr_8k.trainImages.txt'
 train_data = load_training_data(filename)
@@ -99,6 +103,9 @@ vocab_length = len(tokenizer.word_index)+1
 print('Vocabulary Size: %d'%vocab_length)
 
 max_length = max_length(train_descriptions)
+
+
+
 print('Max Description length %d'%max_length)
 generator = data_generator(train_descriptions, train_features, tokenizer, 
 	max_length, vocab_length)
@@ -106,3 +113,16 @@ inputs, outputs = next(generator)
 print(inputs[0].shape)
 print(inputs[1].shape)
 print(outputs.shape)
+
+model = caption_model(vocab_length,max_length)
+
+
+epochs = 20
+steps = len(train_descriptions)
+for i in range(epochs):
+	generator = data_generator(train_descriptions,train_features,
+		tokenizer,max_length,vocab_length)
+	model.fit_generator(generator,epochs=1,steps_per_epoch=steps,
+		verbose=1)
+	model.save('model_'+str(i)+'.h5')
+
