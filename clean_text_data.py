@@ -20,6 +20,7 @@ def load_descriptions(document):
 		if image_id not in mapping:
 			mapping[image_id]=list()
 		mapping[image_id].append(image_description)
+
 	return mapping
 descriptions = load_descriptions(doc)
 print('Loaded: %d '%len(descriptions))
@@ -51,6 +52,7 @@ def to_vocabulary(descriptions):
 	return all_desc
 vocabulary = to_vocabulary(descriptions)
 print('Vocalbulary Sze: %d '%len(vocabulary))
+print(vocabulary)
 
 def save_desriptions(descriptions,filename):
 	lines = list()
