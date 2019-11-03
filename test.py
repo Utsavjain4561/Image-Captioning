@@ -1,5 +1,6 @@
 from gtts import gTTS
 import os
+import pyttsx3
 from PIL import Image 
 from numpy import argmax,argsort
 from pickle import load
@@ -10,6 +11,7 @@ from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 from keras.models import Model
 from keras.models import load_model
+from io import BytesIO
 def extract_features(filename):
 
 	model = VGG16()
@@ -88,15 +90,28 @@ photo = extract_features('example.jpg')
 description = generate_description(model,tokenizer,
 	photo,max_length)
 
-# speak = gTTS(text=description,lang='en')
-# speak.save("audio1.mp3")
-# os.system("mpg321 audio.mp3")
-print(description)
+
+
+engine = pyttsx3.init()
+engine.setProperty('rate',160)
+voices=engine.getProperty('voices')
+engine.setProperty('voice','english')
+engine.say(description)
+engine.runAndWait()
+
+
+
+
 
 try_image = 'example.jpg'
 beam_description = beam_search(try_image,3,tokenizer,max_length,photo)
 print('Beam Description with k=3 ',beam_description)
+engine.say(beam_description)
+engine.runAndWait()
 beam_description = beam_search(try_image,5,tokenizer,max_length,photo)
+engine.say(beam_description)
 print('Beam Description with k=5 ',beam_description)
 beam_description = beam_search(try_image,7,tokenizer,max_length,photo)
 print('Beam Description with k=7 ',beam_description)
+engine.say(beam_description)
+engine.runAndWait()
