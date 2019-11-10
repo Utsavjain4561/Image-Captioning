@@ -1,5 +1,7 @@
+
 from gtts import gTTS
 import os
+from keras import backend as K
 import pyttsx3
 from PIL import Image 
 from numpy import argmax,argsort
@@ -15,6 +17,7 @@ from keras.applications.vgg16 import VGG16
 from keras.applications.vgg16 import preprocess_input
 
 from io import BytesIO
+
 def extract_features(filename):
 
 	model = InceptionV3()
@@ -55,7 +58,7 @@ def generate_description(model,tokenizer,photo,max_length):
 	return input_text
 
 ### Beam Search to predict top k captions for an image
-def beam_search(image,beam_index,tokenizer,max_length,photo):
+def beam_search(image,beam_index,tokenizer,max_length,photo,model):
 	start = [tokenizer.word_index['startseq']]
 	start_word = [[start,0.0]]
 
@@ -84,37 +87,41 @@ def beam_search(image,beam_index,tokenizer,max_length,photo):
 	final_caption = ' '.join(final_caption[1:])
 	return final_caption
 
+def prediction():
+	K.clear_session()
+	tokenizer = load(open('tokenizer.pkl','rb'))
+	max_length = 34
+	model = load_model('model_best_weights.h5')
 
-tokenizer = load(open('tokenizer.pkl','rb'))
-max_length = 34
-model = load_model('model_best_weights.h5')
+	photo = extract_features('example.jpg')
+	description = generate_description(model,tokenizer,
+		photo,max_length)
 
-photo = extract_features('example.jpg')
-description = generate_description(model,tokenizer,
-	photo,max_length)
+	print(description)
 
-print(description)
-
-engine = pyttsx3.init()
-engine.setProperty('rate',160)
-voices=engine.getProperty('voices')
-engine.setProperty('voice','english')
-engine.say(description)
-engine.runAndWait()
-
-
-
+	engine = pyttsx3.init()
+	engine.setProperty('rate',160)
+	voices=engine.getProperty('voices')
+	engine.setProperty('voice','english')
+	engine.say(description)
+	engine.runAndWait()
 
 
-try_image = 'example.jpg'
-beam_description = beam_search(try_image,3,tokenizer,max_length,photo)
-print('Beam Description with k=3 ',beam_description)
-engine.say(beam_description)
-engine.runAndWait()
-beam_description = beam_search(try_image,5,tokenizer,max_length,photo)
-engine.say(beam_description)
-print('Beam Description with k=5 ',beam_description)
-beam_description = beam_search(try_image,7,tokenizer,max_length,photo)
-print('Beam Description with k=7 ',beam_description)
-engine.say(beam_description)
-engine.runAndWait()
+
+
+
+	try_image = 'example.jpg'
+	beam_description = beam_search(try_image,3,tokenizer,max_length,photo,model)
+	print('Beam Description with k=3 ',beam_description)
+	engine.say(beam_description)
+	engine.runAndWait()
+	beam_description = beam_search(try_image,5,tokenizer,max_length,photo,model)
+	engine.say(beam_description)
+	print('Beam Description with k=5 ',beam_description)
+	beam_description = beam_search(try_image,7,tokenizer,max_length,photo,model)
+	print('Beam Description with k=7 ',beam_description)
+	engine.say(beam_description)
+	engine.runAndWait()
+	K.clear_session()
+	return description
+prediction()

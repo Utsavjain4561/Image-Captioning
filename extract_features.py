@@ -18,7 +18,7 @@ def extract_features(directory_name):
 	model = InceptionV3(weights='imagenet')
 	model.layers.pop()
 	for layer in model.layers:
-		layer.trainable = False
+		layers.trainable = False
 	plot_model(model,to_file='inception.png')
 	embedding_size = 300
 	dense_input = BatchNormalization(axis=-1)(model.output)

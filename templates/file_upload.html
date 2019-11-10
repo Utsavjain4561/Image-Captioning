@@ -1,0 +1,40 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Caption Bot</title>
+	<link rel= "stylesheet"  type="text/css" href="/static/file_style.css">
+
+	
+</head>
+<body>
+<div class="drop-zone">
+ <div class="timer-bar">
+  <div class="wrapper">
+   <i class='success-icon ion-ios-checkmark-empty'></i>
+   <p class='success-text'></p>
+  </div>
+ </div>
+ <!-- <input type="button" id="submit" name="Submit" value="Run Script" onclick="goPython()"
+  --><p class="timer-info">Drop your file here</p>
+</div>
+<script class="jsbin" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+
+<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+
+<script type="text/javascript"
+         src="{{ url_for('static', filename='file_engine.js') }}"></script>
+<!-- <script>
+        function goPython(){
+            $.ajax({
+              url: "hello.py",
+             context: document.body
+            }).done(function() {
+             alert('finished python script');;
+            });
+        }
+    </script>
+ --></body>
+</html>
+
+
