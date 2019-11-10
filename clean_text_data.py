@@ -52,7 +52,7 @@ def to_vocabulary(descriptions):
 	return all_desc
 vocabulary = to_vocabulary(descriptions)
 print('Vocalbulary Sze: %d '%len(vocabulary))
-print(vocabulary)
+
 
 def save_desriptions(descriptions,filename):
 	lines = list()

@@ -90,15 +90,15 @@ def evaluate(model,descriptions,photo,tokenizer,max_length):
 	print('BLEU-4: %f' % corpus_bleu(actual, predicted, weights=(0.25, 0.25, 0.25, 0.25)))
 
 
-filename = '/home/uj/Desktop/Resources/Flickr8k/Flickr8k_text/Flickr_8k.trainImages.txt'
+filename = 'Resources/Flickr8k/Flickr8k_text/Flickr_8k.trainImages.txt'
 train_data = load_set(filename)
 print('Dataset: %d' %len(train_data) )
 
-train_descriptions = load_descriptions('/home/uj/Desktop/Resources/descriptions.txt',
+train_descriptions = load_descriptions('Resources/descriptions.txt',
 	train_data)
 print('Descriptions: %d'%len(train_descriptions))
 
-train_features = load_photo_features('/home/uj/Desktop/Resources/features.pkl',train_data)
+train_features = load_photo_features('Resources/features.pkl',train_data)
 print('Photos: %d'%len(train_features))
 
 tokenizer = create_tokenizer(train_descriptions)
@@ -108,19 +108,19 @@ print('Vocabulary Size: %d'%vocab_length)
 max_length = max_length(train_descriptions)
 print('Max Description length %d'%max_length)
 
-filename = '/home/uj/Desktop/Resources/Flickr8k/Flickr8k_text/Flickr_8k.testImages.txt'
+filename = 'Resources/Flickr8k/Flickr8k_text/Flickr_8k.testImages.txt'
 test = load_set(filename)
 print('Dataset : %d' %len(test))
 
-test_description = load_descriptions('/home/uj/Desktop/Resources/descriptions.txt',
+test_description = load_descriptions('Resources/descriptions.txt',
 	test)
 print('Description: %d'%len(test_description))
 
-test_features  = load_photo_features('/home/uj/Desktop/Resources/features.pkl',
+test_features  = load_photo_features('Resources/features.pkl',
 	test)
 print('Photos %d'%len(test_features))
 
-filename = 'model_7.h5'
+filename = 'model_best_weights.h5'
 model = load_model(filename)
 
 evaluate(model,test_description,test_features,tokenizer,max_length)

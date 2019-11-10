@@ -6,6 +6,8 @@ from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 from model import caption_model
+from model_new import ImageCaptionModel 
+from keras.callbacks import EarlyStopping,ModelCheckpoint
 
 def load_doc(filename):
 	file = open(filename,'r')
@@ -97,35 +99,44 @@ train_descriptions = load_descriptions('Resources/descriptions.txt',
 print('Descriptions: %d'%len(train_descriptions))
 
 
-# train_features = load_photo_features('/home/uj/Desktop/Resources/features.pkl',train_data)
-# print('Photos: %d'%len(train_features))
+train_features = load_photo_features('Resources/features.pkl',train_data)
+print('Photos: %d'%len(train_features))
+	
+tokenizer = create_tokenizer(train_descriptions)
+dump(tokenizer,open('tokenizer.pkl','wb'))
+vocab_length = len(tokenizer.word_index)+1
+print('Vocabulary Size: %d'%vocab_length)
 
-# tokenizer = create_tokenizer(train_descriptions)
-# dump(tokenizer,open('tokenizer.pkl','wb'))
-# vocab_length = len(tokenizer.word_index)+1
-# print('Vocabulary Size: %d'%vocab_length)
-
-# max_length = max_length(train_descriptions)
-
-
-
-# print('Max Description length %d'%max_length)
-# generator = data_generator(train_descriptions, train_features, tokenizer, 
-# 	max_length, vocab_length)
-# inputs, outputs = next(generator)
-# print(inputs[0].shape)
-# print(inputs[1].shape)
-# print(outputs.shape)
-
-# model = caption_model(vocab_length,max_length)
+max_length = max_length(train_descriptions)
 
 
-# # epochs = 20
-# # steps = len(train_descriptions)
-# # for i in range(epochs):
-# # 	generator = data_generator(train_descriptions,train_features,
-# # 		tokenizer,max_length,vocab_length)
-# # 	model.fit_generator(generator,epochs=1,steps_per_epoch=steps,
-# # 		verbose=1)
-# # 	model.save('model_'+str(i)+'.h5')
+
+print('Max Description length %d'%max_length)
+generator = data_generator(train_descriptions, train_features, tokenizer, 
+	max_length, vocab_length)
+inputs, outputs = next(generator)
+print(inputs[0].shape)
+print(inputs[1].shape)
+print(outputs.shape)
+
+#model = caption_model(vocab_length,max_length)
+caption_model= ImageCaptionModel()
+model = caption_model.build()
+#print(model.summary())
+
+
+epochs = 20
+steps = len(train_descriptions)
+early_stop = EarlyStopping(monitor='loss',min_delta=0.001,
+	patience=3,mode='min',verbose=1)
+checkpoint = ModelCheckpoint('model_best_weights.h5',
+	monitor='loss',verbose=1,save_best_only=True,
+	mode='min',period=1)
+
+for i in range(epochs):
+	generator = data_generator(train_descriptions,train_features,
+		tokenizer,max_length,vocab_length)
+	model.fit_generator(generator,epochs=1,steps_per_epoch=steps,
+		verbose=1,callbacks=[early_stop,checkpoint])
+	model.save('model_'+str(i)+'.h5')
 

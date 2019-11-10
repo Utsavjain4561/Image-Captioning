@@ -5,21 +5,24 @@ from PIL import Image
 from numpy import argmax,argsort
 from pickle import load
 from keras.preprocessing.sequence import pad_sequences
-from keras.applications.vgg16 import VGG16
-from keras.applications.vgg16 import preprocess_input
+from keras.applications.inception_v3 import InceptionV3
+from keras.applications.inception_v3 import preprocess_input
 from keras.preprocessing.image import load_img
 from keras.preprocessing.image import img_to_array
 from keras.models import Model
 from keras.models import load_model
+from keras.applications.vgg16 import VGG16
+from keras.applications.vgg16 import preprocess_input
+
 from io import BytesIO
 def extract_features(filename):
 
-	model = VGG16()
+	model = InceptionV3()
 	model.layers.pop()
 	model = Model(inputs=model.inputs,
 		outputs=model.layers[-1].output)
 
-	img = load_img(filename,target_size=(224,224))
+	img = load_img(filename,target_size=(299,299))
 	img = img_to_array(img)
 
 	img = img.reshape((1,img.shape[0],img.shape[1],img.shape[2]))
@@ -84,13 +87,13 @@ def beam_search(image,beam_index,tokenizer,max_length,photo):
 
 tokenizer = load(open('tokenizer.pkl','rb'))
 max_length = 34
-model = load_model('model_7.h5')
+model = load_model('model_best_weights.h5')
 
 photo = extract_features('example.jpg')
 description = generate_description(model,tokenizer,
 	photo,max_length)
 
-
+print(description)
 
 engine = pyttsx3.init()
 engine.setProperty('rate',160)
