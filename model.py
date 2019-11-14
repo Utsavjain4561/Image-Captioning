@@ -31,5 +31,5 @@ def caption_model(vocab_length,max_length):
 	#print(model.summary())
 	#plot_model(model,to_file='model.png',show_shapes=True)
 	return model
-caption_model(8763,34)
+#caption_model(8763,34)
 
